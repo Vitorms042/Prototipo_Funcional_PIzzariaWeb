@@ -1,31 +1,53 @@
 import { useState } from "react";
-import { Dialog, DialogActions, DialogContent, DialogTitle, Button, TextField, Typography, Box, InputAdornment } from "@mui/material";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Button,
+  TextField,
+  Typography,
+  Box,
+  InputAdornment,
+  CircularProgress,
+} from "@mui/material";
+import { useUser } from "../context/UserContext";
 
 const AuthModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+  const { login } = useUser(); // Hook para atualizar o estado do usuário
   const [isSignup, setIsSignup] = useState(false); // Controla se é login ou cadastro
   const [cpf, setCpf] = useState(""); // CPF para login
   const [name, setName] = useState(""); // Nome para cadastro
   const [cellphone, setCellphone] = useState(""); // Celular para cadastro
   const [address, setAddress] = useState(""); // Endereço para cadastro
   const [password, setPassword] = useState(""); // Senha para login e cadastro
+  const [loading, setLoading] = useState(false); // Estado de carregamento
 
-  const toggleForm = () => setIsSignup(!isSignup); // Função para alternar entre login e cadastro
+  const toggleForm = () => setIsSignup(!isSignup); // Alterna entre login e cadastro
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    setLoading(true);
+
     if (isSignup) {
-      // Lógica de cadastro
+      // Simulação de cadastro
       console.log("Cadastro:", { name, cpf, cellphone, address, password });
+      // Aqui você pode integrar com o backend para cadastrar o usuário
+      login({ id: "1", name, email: `${cpf}@email.com`, avatar: "/assets/images/avatar.png" });
     } else {
-      // Lógica de login
+      // Simulação de login
       console.log("Login:", { cpf, password });
+      // Aqui você pode integrar com o backend para autenticar o usuário
+      login({ id: "1", name: "Usuário Teste", email: `${cpf}@email.com`, avatar: "/assets/images/avatar.png" });
     }
-    onClose(); // Fechar o modal após o envio
+
+    setLoading(false);
+    onClose(); // Fecha o modal após o envio
   };
 
   return (
     <Dialog open={isOpen} onClose={onClose} aria-labelledby="auth-modal-title" aria-describedby="auth-modal-description">
-      <Box sx={{ width: 400 }}>
-        <DialogTitle id="auth-modal-title" align="center">
+      <Box sx={{ width: 400, padding: 2 }}>
+        <DialogTitle id="auth-modal-title" align="center" sx={{ fontWeight: "bold", fontSize: "1.5rem" }}>
           {isSignup ? "Criar Conta" : "Entrar"}
         </DialogTitle>
         <DialogContent>
@@ -105,12 +127,29 @@ const AuthModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
             )}
           </Typography>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={onClose} color="secondary">
+        <DialogActions sx={{ justifyContent: "center", gap: 2 }}>
+          <Button
+            onClick={onClose}
+            color="secondary"
+            variant="outlined"
+            sx={{ borderRadius: "8px", padding: "0.5rem 1.5rem" }}
+          >
             Fechar
           </Button>
-          <Button onClick={handleSubmit} color="primary">
-            {isSignup ? "Cadastrar" : "Entrar"}
+          <Button
+            onClick={handleSubmit}
+            color="primary"
+            variant="contained"
+            sx={{
+              borderRadius: "8px",
+              padding: "0.5rem 1.5rem",
+              background: "linear-gradient(to right, #4caf50, #81c784)",
+              color: "white",
+              fontWeight: "bold",
+            }}
+            disabled={loading}
+          >
+            {loading ? <CircularProgress size={24} sx={{ color: "white" }} /> : isSignup ? "Cadastrar" : "Entrar"}
           </Button>
         </DialogActions>
       </Box>

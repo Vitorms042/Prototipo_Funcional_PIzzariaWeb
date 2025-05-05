@@ -73,13 +73,13 @@ const Header = () => {
             Configurar Pizza
           </button>
           <button
-            onClick={() => handleProtectedNavigation("/acompanharpedido")}
+            onClick={() => handleProtectedNavigation("/trackorder")}
             className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
           >
             Acompanhar Pedido
           </button>
           <button
-            onClick={() => handleProtectedNavigation("/rastrearpedido")}
+            onClick={() => handleProtectedNavigation("/location")}
             className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
           >
             Rastrear Pedido
@@ -124,7 +124,7 @@ const Header = () => {
                 startIcon={<Avatar src={user.avatar} />}
                 className="text-gray-600 hover:text-gray-900"
               >
-                {user.name}
+                {user.email}
               </Button>
 
               <Menu
@@ -132,7 +132,8 @@ const Header = () => {
                 open={Boolean(anchorEl)}
                 onClose={handleCloseMenu}
               >
-                <MenuItem onClick={handleCloseMenu}>Minha Conta</MenuItem>
+                <MenuItem onClick={() => navigate("/profile")}>Minha Conta</MenuItem>
+                <MenuItem onClick={() => navigate("/orders")}>Meus Pedidos</MenuItem> {/* Novo item */}
                 <MenuItem onClick={handleLogout}>Sair</MenuItem>
               </Menu>
             </div>
@@ -157,13 +158,13 @@ const Header = () => {
             Configurar Pizza
           </button>
           <button
-            onClick={() => handleProtectedNavigation("/acompanharpedido")}
+            onClick={() => handleProtectedNavigation("/trackorder")}
             className="block text-gray-600 hover:text-gray-900 font-medium transition-colors"
           >
             Acompanhar Pedido
           </button>
           <button
-            onClick={() => handleProtectedNavigation("/rastrearpedido")}
+            onClick={() => handleProtectedNavigation("/location")}
             className="block text-gray-600 hover:text-gray-900 font-medium transition-colors"
           >
             Rastrear Pedido
