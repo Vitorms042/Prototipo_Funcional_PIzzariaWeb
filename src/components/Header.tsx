@@ -1,67 +1,89 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { useCart } from "../context/CartContext"; // Importando o contexto do carrinho
-import { useUser } from "../context/UserContext"; // Importando o contexto do usuário
-import AuthModal from "./AuthModal"; // Importando o modal
+import { Link, useNavigate } from "react-router-dom";
+import { useCart } from "../context/CartContext";
+import { useUser } from "../context/UserContext";
+import AuthModal from "./AuthModal";
 
-import { Avatar, Menu, MenuItem, Button } from "@mui/material";
+import { Avatar, Menu, MenuItem, Button, Snackbar, Alert } from "@mui/material";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart"; // Ícone do carrinho
 
 const Header = () => {
-  const { itemCount } = useCart(); // Obtendo o número de itens no carrinho
-  const { user, logout } = useUser(); // Obtendo o usuário logado e função de logout
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // Estado para o menu hambúrguer
-  const [isModalOpen, setIsModalOpen] = useState(false); // Controla o modal de login
-
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null); // Estado para o menu dropdown
+  const { itemCount } = useCart();
+  const { user, logout } = useUser();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [notification, setNotification] = useState<string | null>(null); // Notificação para o alerta
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  // Função para abrir o modal de login
   const openModal = () => {
     setIsModalOpen(true);
   };
 
-  // Função para fechar o modal de login
   const closeModal = () => {
     setIsModalOpen(false);
   };
 
-  // Função para abrir o menu de usuário
   const handleUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  // Função para fechar o menu de usuário
   const handleCloseMenu = () => {
     setAnchorEl(null);
   };
 
   const handleLogout = () => {
-    logout(); // Chama a função de logout
-    handleCloseMenu(); // Fecha o menu após o logout
+    logout();
+    handleCloseMenu();
+  };
+
+  const handleProtectedNavigation = (path: string) => {
+    if (user) {
+      navigate(path); // Navega para a rota se o usuário estiver logado
+    } else {
+      setNotification("Você precisa estar logado para acessar este conteúdo."); // Define a mensagem de notificação
+      openModal(); // Abre o modal de login
+    }
   };
 
   return (
     <header className="bg-white shadow-md w-full">
       <div className="max-w-screen-xl mx-auto px-4 py-4 flex justify-between items-center">
         {/* Logo */}
-        <div className="text-3xl font-extrabold text-blue-600 hover:text-blue-700 transition-all">
-          <Link to="/">Pizzaria</Link>
+        <div className="flex items-center">
+          <Link to="/">
+            <img
+              src="/assets/images/logoPizzaria.png"
+              alt="Logo Pizzaria"
+              className="h-15 w-auto"
+            />
+          </Link>
         </div>
 
         {/* Navegação no Desktop */}
         <nav className="hidden md:flex space-x-8">
-          <Link to="/configuracaopizza" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+          <button
+            onClick={() => handleProtectedNavigation("/configuracaopizza")}
+            className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+          >
             Configurar Pizza
-          </Link>
-          <Link to="/drinkssetup" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
-            Bebidas
-          </Link>
-          <Link to="/trackorder" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
-            Rastreamento
-          </Link>
+          </button>
+          <button
+            onClick={() => handleProtectedNavigation("/acompanharpedido")}
+            className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+          >
+            Acompanhar Pedido
+          </button>
+          <button
+            onClick={() => handleProtectedNavigation("/rastrearpedido")}
+            className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+          >
+            Rastrear Pedido
+          </button>
         </nav>
 
         {/* Menu Hambúrguer para dispositivos móveis */}
@@ -88,23 +110,10 @@ const Header = () => {
         <div className="flex items-center space-x-6">
           {/* Botão de Carrinho */}
           <button className="relative flex items-center justify-center transition-transform transform hover:scale-110">
-            <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center">
+            <span className="absolute -top-3 -right-3 bg-red-600 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center">
               {itemCount}
             </span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-8 h-8 text-gray-600 hover:text-gray-900 transition-colors"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M3 3h18l-1.5 9h-15L3 3z"
-              />
-            </svg>
+            <ShoppingCartIcon className="text-gray-600 hover:text-gray-900 w-8 h-8" />
           </button>
 
           {/* Login / Cadastro ou Informações do usuário */}
@@ -130,9 +139,9 @@ const Header = () => {
           ) : (
             <button
               onClick={openModal}
-              className="px-6 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold transition-all transform hover:scale-105"
+              className="px-6 py-2 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
             >
-              Login / Cadastro
+              Fazer login
             </button>
           )}
         </div>
@@ -141,29 +150,41 @@ const Header = () => {
       {/* Menu Hambúrguer para dispositivos móveis - visível quando isMenuOpen é true */}
       {isMenuOpen && (
         <div className="md:hidden bg-white shadow-md mt-4 py-4 px-6 space-y-6">
-          <Link
-            to="/configuracaopizza"
+          <button
+            onClick={() => handleProtectedNavigation("/configuracaopizza")}
             className="block text-gray-600 hover:text-gray-900 font-medium transition-colors"
           >
             Configurar Pizza
-          </Link>
-          <Link
-            to="/drinkssetup"
+          </button>
+          <button
+            onClick={() => handleProtectedNavigation("/acompanharpedido")}
             className="block text-gray-600 hover:text-gray-900 font-medium transition-colors"
           >
-            Bebidas
-          </Link>
-          <Link
-            to="/trackorder"
+            Acompanhar Pedido
+          </button>
+          <button
+            onClick={() => handleProtectedNavigation("/rastrearpedido")}
             className="block text-gray-600 hover:text-gray-900 font-medium transition-colors"
           >
-            Rastreamento
-          </Link>
+            Rastrear Pedido
+          </button>
         </div>
       )}
 
       {/* Modal de Login / Cadastro */}
       <AuthModal isOpen={isModalOpen} onClose={closeModal} />
+
+      {/* Notificação */}
+      <Snackbar
+        open={!!notification}
+        autoHideDuration={3000}
+        onClose={() => setNotification(null)}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert onClose={() => setNotification(null)} severity="warning" sx={{ width: "100%" }}>
+          {notification}
+        </Alert>
+      </Snackbar>
     </header>
   );
 };
