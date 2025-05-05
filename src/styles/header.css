@@ -1,0 +1,127 @@
+/* src/styles/header.css */
+
+header {
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+  }
+  
+  header .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  header .logo {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #1D4ED8;
+    transition: color 0.3s;
+  }
+  
+  header .logo:hover {
+    color: #2563EB;
+  }
+  
+  header nav {
+    display: flex;
+    gap: 30px;
+  }
+  
+  header nav a {
+    font-size: 1rem;
+    color: #4B5563;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+  }
+  
+  header nav a:hover {
+    color: #1F2937;
+  }
+  
+  header .actions {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  
+  header .actions .cart {
+    position: relative;
+  }
+  
+  header .actions .cart .badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #EF4444;
+    color: white;
+    font-size: 12px;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  header .actions .cart svg {
+    width: 30px;
+    height: 30px;
+    color: #4B5563;
+    transition: color 0.3s;
+  }
+  
+  header .actions .cart svg:hover {
+    color: #1F2937;
+  }
+  
+  header .actions .login {
+    padding: 10px 20px;
+    background-color: #2563EB;
+    color: white;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.3s;
+  }
+  
+  header .actions .login:hover {
+    background-color: #1D4ED8;
+  }
+  
+  header .menu-icon {
+    display: none;
+    color: #4B5563;
+  }
+  
+  header .mobile-menu {
+    display: none;
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 10px;
+    padding: 20px;
+  }
+  
+  header .mobile-menu a {
+    display: block;
+    margin-bottom: 10px;
+  }
+  
+  @media (max-width: 768px) {
+    header nav {
+      display: none;
+    }
+  
+    header .menu-icon {
+      display: block;
+    }
+  
+    header .mobile-menu {
+      display: block;
+    }
+  }
+  
