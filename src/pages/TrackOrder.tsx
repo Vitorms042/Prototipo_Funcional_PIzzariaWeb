@@ -1,8 +1,11 @@
+import ConfirmacaoPedido from "../components/OrderConfirmed";  // Importando o componente ConfirmacaoPedido
+
 const TrackOrder = () => {
   return (
-    <div>
-      <h1>Rastreamento de Pedido</h1>
-      <p>Acompanhe o status do seu pedido em tempo real.</p>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 py-10 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-4xl bg-white rounded-lg shadow-lg p-6">
+        <ConfirmacaoPedido />
+      </div>
     </div>
   );
 };

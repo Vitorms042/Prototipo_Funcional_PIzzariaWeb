@@ -1,18 +1,18 @@
 import { BrowserRouter } from "react-router-dom";
-import AppRoutes from "./routes";  // Importando as rotas
-import Header from "./components/Header";  // Importando o Header
-import Footer from "./components/Footer"; // Importando o Footer
-import { CartProvider } from "./context/CartContext";  // Importando o CartProvider
-import { UserProvider } from "./context/UserContext";  // Importando o UserProvider
+import AppRoutes from "./routes";  
+import Header from "./components/Header";  
+import Footer from "./components/Footer"; 
+import { CartProvider } from "./context/CartContext"; 
+import { UserProvider } from "./context/UserContext";
 
 function App() {
   return (
-    <UserProvider>  {/* Envolvendo a aplicação com o contexto de usuário */}
-      <CartProvider>  {/* Envolvendo a aplicação com o contexto de carrinho */}
+    <UserProvider> 
+      <CartProvider> 
         <BrowserRouter>
-          <Header />  {/* Incluindo o Header na aplicação */}
-          <AppRoutes /> {/* Roteamento da aplicação */}
-          <Footer /> {/* Incluindo o Footer na aplicação */}
+          <Header /> 
+            <AppRoutes /> 
+          <Footer />
         </BrowserRouter>
       </CartProvider>
     </UserProvider>

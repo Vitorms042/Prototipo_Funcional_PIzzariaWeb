@@ -4,7 +4,7 @@ import Home  from "../pages/Home";
 import ConfiguracaoPizza  from "../pages/ConfiguraPizza";
 import DrinksSetup  from "../pages/DrinkSetup";
 import TrackOrder  from "../pages/TrackOrder";
-import MapaLocalizacao  from "../pages/MapaLocalizacao" ;
+import MapLocation  from "../pages/MapaLocalizacao" ;
 import Pagamento  from "../pages/Pagamento";
 
 const AppRoutes = () => {
@@ -14,7 +14,7 @@ const AppRoutes = () => {
       <Route path="/configuracaopizza" element={<ConfiguracaoPizza />} />
       <Route path="/drinkssetup" element={<DrinksSetup />} />
       <Route path="/trackorder" element={<TrackOrder />} />
-      <Route path="/mapalocalizacao" element={<MapaLocalizacao />} />
+      <Route path="/location" element={<MapLocation />} />
       <Route path="/pagamento" element={<Pagamento />} />
     </Routes>
   );
