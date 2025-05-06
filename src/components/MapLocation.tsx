@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import L from "leaflet"; // Para criar um ícone customizado
-import "leaflet/dist/leaflet.css";
+import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
 
 // Tipos para simulação de dados
 interface LocationData {
@@ -21,6 +19,15 @@ const MapLocation = () => {
   const [location, setLocation] = useState<LocationData | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0); // Índice para o trajeto
 
+  // Configurações do Google Maps
+  const mapContainerStyle = { width: "100%", height: "100%" };
+  const center = { lat: route[0].latitude, lng: route[0].longitude };
+
+  // Carregar o script do Google Maps
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: "AIzaSyAXSI_iHhtf9Lq4HORJ_YC6FTPWB59Gz78", // Substitua pela sua chave de API
+  });
+
   useEffect(() => {
     // Função para simular o movimento ao longo do trajeto
     const interval = setInterval(() => {
@@ -31,30 +38,27 @@ const MapLocation = () => {
     return () => clearInterval(interval); // Limpar o intervalo quando o componente for desmontado
   }, [currentIndex]);
 
+  if (!isLoaded) {
+    return <div>Carregando mapa...</div>;
+  }
+
   return (
-    <div className="h-full w-full">
-      <MapContainer
-        center={[route[0].latitude, route[0].longitude]} // Começa com a posição inicial
+    <div style={{ height: "100%", width: "100%" }}>
+      <GoogleMap
+        mapContainerStyle={mapContainerStyle}
+        center={center}
         zoom={13}
-        style={{ width: "100%", height: "100%" }}
       >
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
         {location && (
           <Marker
-            position={[location.latitude, location.longitude]}
-            icon={new L.Icon({
-              iconUrl: "/locationIcon.svg", // Ícone customizado
-              iconSize: [30, 30],
-            })}
-          >
-            <Popup>
-              Pedido em andamento. Localização: {location.latitude}, {location.longitude}
-            </Popup>
-          </Marker>
+            position={{ lat: location.latitude, lng: location.longitude }}
+            icon={{
+              url: "/locationIcon.svg", // Ícone customizado
+              scaledSize: new window.google.maps.Size(40, 40),
+            }}
+          />
         )}
-      </MapContainer>
+      </GoogleMap>
     </div>
   );
 };

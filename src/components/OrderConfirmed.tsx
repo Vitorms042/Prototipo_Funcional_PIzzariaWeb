@@ -1,92 +1,203 @@
-import { Card, CardContent, Typography, Button, Divider  } from "@mui/material";
-import { FaPizzaSlice, FaRegCreditCard, FaMapMarkerAlt } from "react-icons/fa"; // Ícones para os itens
+import { useEffect, useState } from "react";
+import { Card, CardContent, Typography, Button, Divider, CircularProgress, Box } from "@mui/material";
+import { FaPizzaSlice, FaRegCreditCard, FaMapMarkerAlt } from "react-icons/fa";
+import { PedidoDto, Produto, TamanhoPizza, TipoPagamento, TamanhoBebida } from "../types/PedidoTypes"; // Ajuste o caminho conforme necessário
+import { useNavigate } from "react-router-dom"; // Importa o hook useNavigate
 
-// Simulação de dados do pedido
-const pedido = {
-  numero: 12345,
-  itens: [
-    { nome: "Pizza de Calabresa", valor: 40.0, tamanho: "Grande" },
-    { nome: "Refrigerante Coca-Cola", valor: 8.0 },
-    { nome: "Cerveja Pilsen", valor: 12.0 },
-  ],
-  endereco: "Rua das Pizzas, 123 - Centro, Cidade X",
-  valorEntrega: 8.0,
-  pagamento: "Cartão de Crédito Visa",
-  parcelas: 1,
-  tempoEstimado: 30, // minutos
-};
+// Simulação de dados do "back-end"
+const pedidosMock: PedidoDto[] = [
+  {
+    valor_total: 68.0,
+    cliente: {
+      Cpf: "123.456.789-00",
+      Nome: "João Silva",
+      Endereco: "Rua das Pizzas, 123 - Centro, Cidade X",
+      Telefone: "(11) 98765-4321",
+    },
+    item_pedido: [
+      { quantidade: 1, valor_item: 40.0, produtoId: "1" },
+      { quantidade: 2, valor_item: 8.0, produtoId: "2" },
+      { quantidade: 1, valor_item: 12.0, produtoId: "3" },
+    ],
+    tipo_pagamento: TipoPagamento.Credito,
+  },
+];
 
-const ConfirmacaoPedido = () => {
-  const totalPedido = pedido.itens.reduce((total, item) => total + item.valor, 0);
-  const totalFinal = totalPedido + pedido.valorEntrega;
+// Simulação de produtos
+const produtosMock: Produto[] = [
+  { id: "1", nome: "Pizza de Calabresa", preco: 40.0, tipo: "pizza", tamanho: TamanhoPizza.grande },
+  { id: "2", nome: "Refrigerante Coca-Cola", preco: 8.0, tipo: "bebida", tamanho: TamanhoBebida.Lata },
+  { id: "3", nome: "Cerveja Pilsen", preco: 12.0, tipo: "bebida" },
+];
+
+const OrderConfirmed = () => {
+  const [pedido, setPedido] = useState<PedidoDto | null>(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate(); // Inicializa o hook useNavigate
+
+  // Simula a busca de pedidos no "back-end"
+  useEffect(() => {
+    setTimeout(() => {
+      setPedido(pedidosMock[0]); // Simula o retorno do pedido do cliente
+      setLoading(false);
+    }, 1000); // Simula um atraso na resposta
+  }, []);
+
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#f9f9f9",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!pedido) {
+    return (
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#f9f9f9",
+          textAlign: "center",
+          padding: 4,
+        }}
+      >
+        <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
+          Nenhum pedido em aberto encontrado.
+        </Typography>
+        <Typography variant="body1" sx={{ color: "#555", mb: 4 }}>
+          Parece que você ainda não fez nenhum pedido. Que tal começar agora?
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => window.location.href = "/ConfiguraPizza"}
+          sx={{ textTransform: "none", fontWeight: "bold", padding: "10px 20px" }}
+        >
+          Fazer um Pedido
+        </Button>
+      </Box>
+    );
+  }
+
+  const renderProduto = (produtoId: string) => {
+    const produto = produtosMock.find((p) => p.id === produtoId);
+    if (!produto) return "Produto não encontrado";
+    return `${produto.nome} ${produto.tamanho !== undefined ? `(${produto.tamanho})` : ""}`;
+  };
 
   return (
-    <div className="flex flex-col items-center justify-center p-6 space-y-6 max-w-4xl mx-auto">
-      <Card className="w-full p-6 bg-white shadow-xl rounded-lg">
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#f9f9f9",
+        padding: 4,
+      }}
+    >
+      <Card
+        sx={{
+          width: "100%",
+          maxWidth: "800px",
+          backgroundColor: "white",
+          borderRadius: "16px",
+          boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+          padding: 4,
+        }}
+      >
         <CardContent>
-          <Typography variant="h5" align="center" color="primary" className="font-bold mb-6">
-            Confirmação do Pedido #{pedido.numero}
+          <Typography variant="h5" align="center" color="primary" sx={{ fontWeight: "bold", mb: 4 }}>
+            Confirmação do Pedido
           </Typography>
 
-          <Typography variant="h6" className="font-semibold text-center mb-6 text-gray-600">
+          <Typography variant="h6" align="center" sx={{ fontWeight: "medium", color: "#555", mb: 4 }}>
             Seu pedido foi recebido e está sendo preparado!
           </Typography>
 
           {/* Seção dos Itens do Pedido */}
-          <div className="space-y-4">
-            {pedido.itens.map((item, index) => (
-              <div key={index} className="flex justify-between items-center bg-gray-50 rounded-md p-4 shadow-md">
-                <div className="flex items-center space-x-3">
+          <Box sx={{ mb: 4 }}>
+            {pedido.item_pedido.map((item, index) => (
+              <Box
+                key={index}
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  backgroundColor: "#f9f9f9",
+                  borderRadius: "8px",
+                  padding: 2,
+                  mb: 2,
+                  boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.1)",
+                }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                   <FaPizzaSlice className="text-orange-500 text-2xl" />
-                  <Typography className="text-lg font-medium text-gray-700">{item.nome} ({item.tamanho || "Padrão"})</Typography>
-                </div>
-                <Typography className="text-lg font-semibold text-gray-900">R$ {item.valor.toFixed(2)}</Typography>
-              </div>
+                  <Typography sx={{ fontWeight: "bold", color: "#333" }}>
+                    {renderProduto(item.produtoId)}
+                  </Typography>
+                </Box>
+                <Typography sx={{ fontWeight: "bold", color: "#333" }}>
+                  R$ {(item.valor_item * item.quantidade).toFixed(2)}
+                </Typography>
+              </Box>
             ))}
-          </div>
+          </Box>
 
-          <Divider className="my-4" />
+          <Divider sx={{ my: 4 }} />
 
           {/* Endereço de Entrega */}
-          <div className="flex items-center space-x-3 mb-4 bg-gray-50 p-4 rounded-md shadow-md">
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 4 }}>
             <FaMapMarkerAlt className="text-red-600 text-2xl" />
-            <Typography className="text-lg font-medium text-gray-700">{pedido.endereco}</Typography>
-          </div>
-
-          {/* Forma de pagamento */}
-          <div className="flex items-center space-x-3 mb-4 bg-gray-50 p-4 rounded-md shadow-md">
-            <FaRegCreditCard className="text-blue-600 text-2xl" />
-            <Typography className="text-lg font-medium text-gray-700">
-              {pedido.pagamento} (Parcelas: {pedido.parcelas})
+            <Typography sx={{ fontWeight: "medium", color: "#555" }}>
+              {pedido.cliente.Endereco}
             </Typography>
-          </div>
+          </Box>
 
-          <Divider className="my-4" />
+          {/* Forma de Pagamento */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 4 }}>
+            <FaRegCreditCard className="text-blue-600 text-2xl" />
+            <Typography sx={{ fontWeight: "medium", color: "#555" }}>
+              {pedido.tipo_pagamento}
+            </Typography>
+          </Box>
 
-          {/* Tempo de Entrega */}
-          <div className="flex justify-between items-center mb-6 bg-gray-50 p-4 rounded-md shadow-md">
-            <Typography variant="h6" className="font-semibold text-gray-700">Tempo de espera estimado:</Typography>
-            <Button variant="contained" color="secondary" className="px-6 py-2">
-              {pedido.tempoEstimado} minutos
+          <Divider sx={{ my: 4 }} />
+
+          {/* Valor Total */}
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 4 }}>
+            <Typography sx={{ fontWeight: "bold", color: "#555" }}>Total:</Typography>
+            <Typography sx={{ fontWeight: "bold", color: "#333" }}>R$ {pedido.valor_total.toFixed(2)}</Typography>
+          </Box>
+
+          {/* Botão para Acompanhar Pedido */}
+          <Box sx={{ textAlign: "center" }}>
+          <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              sx={{ textTransform: "none", fontWeight: "bold", padding: "10px 20px" }}
+              onClick={() => navigate("/location")} // Redireciona para a tela Location
+            >
+              Rastrear Pedido
             </Button>
-          </div>
-
-          {/* Valor total do pedido */}
-          <div className="flex justify-between items-center mb-6">
-            <Typography className="font-semibold text-lg text-gray-700">Total:</Typography>
-            <Typography className="font-semibold text-lg text-gray-900">R$ {totalFinal.toFixed(2)}</Typography>
-          </div>
-
-          {/* Botão para acompanhamento */}
-          <div className="flex justify-center">
-            <Button variant="contained" color="primary" size="large" className="w-full py-3 text-xl">
-              Acompanhar Pedido
-            </Button>
-          </div>
+          </Box>
         </CardContent>
       </Card>
-    </div>
+    </Box>
   );
 };
 
-export default ConfirmacaoPedido;
+export default OrderConfirmed;

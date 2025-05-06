@@ -1,15 +1,15 @@
-import { useState } from "react";
+import Slider from "react-slick";
+import { Box, Typography, Avatar } from "@mui/material";
+import "slick-carousel/slick/slick.css"; // Estilos do react-slick
+import "slick-carousel/slick/slick-theme.css"; // Tema do react-slick
 
-// Componente de Carrossel de Depoimentos
 const TestimonialCarousel = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  // Array de Depoimentos (6 depoimentos)
+  // Array de Depoimentos
   const testimonials = [
     {
       id: 1,
       name: "João Silva",
-      avatar: "/assets/images/avatar1.jpg", // Imagem do cliente
+      avatar: "/assets/images/avatar1.jpg",
       comment: "A melhor pizza que já comi! A massa é incrivelmente leve e o sabor é maravilhoso.",
       rating: 5,
     },
@@ -50,82 +50,91 @@ const TestimonialCarousel = () => {
     },
   ];
 
-  const totalTestimonials = testimonials.length;
-
-  // Função para avançar para o próximo depoimento
-  const nextTestimonial = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % totalTestimonials);
-  };
-
-  // Função para voltar ao depoimento anterior
-  const prevTestimonial = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? totalTestimonials - 1 : prevIndex - 1
-    );
+  // Configurações do react-slick
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    arrows: false, // Remove as setas padrão
   };
 
   return (
-    <section className="py-16 bg-gray-50">
-      <div className="max-w-screen-xl mx-auto px-4 text-center">
-        <h2 className="text-3xl font-extrabold text-blue-600 mb-8">O Que Nossos Clientes Dizem</h2>
-
-        {/* Carrossel */}
-        <div className="relative flex justify-center items-center">
-          <button
-            onClick={prevTestimonial}
-            className="absolute left-0 bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700"
-          >
-            &#60;
-          </button>
-
-          <div className="flex items-center space-x-8">
-            {/* Exibindo o Depoimento Atual */}
-            <div
-              key={testimonials[currentIndex].id}
-              className="bg-white shadow-lg rounded-lg p-8 w-full sm:w-80 md:w-96 hover:scale-105 transform transition-all"
+    <Box
+      sx={{
+        py: 8,
+        backgroundColor: "#f9f9f9",
+        display: "flex",
+        justifyContent: "center",
+      }}
+    >
+      <Box
+        sx={{
+          maxWidth: "800px", // Limita a largura máxima do carrossel
+          width: "100%", // Garante que o carrossel seja responsivo
+          px: 2, // Adiciona espaçamento horizontal
+        }}
+      >
+        <Typography
+          variant="h4"
+          align="center"
+          sx={{ fontWeight: "bold", color: "#1976d2", mb: 4 }}
+        >
+          O Que Nossos Clientes Dizem
+        </Typography>
+        <Slider {...settings}>
+          {testimonials.map((testimonial) => (
+            <Box
+              key={testimonial.id}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                textAlign: "center",
+                p: 4,
+                backgroundColor: "white",
+                borderRadius: "8px",
+                boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+              }}
             >
-              <div className="flex items-center mb-4">
-                <img
-                  src={testimonials[currentIndex].avatar}
-                  alt={testimonials[currentIndex].name}
-                  className="w-16 h-16 rounded-full object-cover mr-4"
-                />
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-800">{testimonials[currentIndex].name}</h3>
-                  <div className="flex text-yellow-500">
-                    {[...Array(5)].map((_, index) => (
-                      <svg
-                        key={index}
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill={index < testimonials[currentIndex].rating ? "currentColor" : "none"}
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        className="w-5 h-5"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M12 17.27l6.18 3.73-1.64-7.03L21 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73-1.64 7.03L12 17.27z"
-                        />
-                      </svg>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <p className="text-gray-600 mb-4">{testimonials[currentIndex].comment}</p>
-            </div>
-          </div>
-
-          <button
-            onClick={nextTestimonial}
-            className="absolute right-0 bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700"
-          >
-            &#62;
-          </button>
-        </div>
-      </div>
-    </section>
+              <Avatar
+                src={testimonial.avatar}
+                alt={testimonial.name}
+                sx={{ width: 80, height: 80, mb: 2 }}
+              />
+              <Typography variant="h6" sx={{ fontWeight: "bold", color: "#333" }}>
+                {testimonial.name}
+              </Typography>
+              <Box sx={{ display: "flex", justifyContent: "center", my: 1 }}>
+                {[...Array(5)].map((_, index) => (
+                  <svg
+                    key={index}
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill={index < testimonial.rating ? "currentColor" : "none"}
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    className="w-5 h-5 text-yellow-500"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 17.27l6.18 3.73-1.64-7.03L21 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73-1.64 7.03L12 17.27z"
+                    />
+                  </svg>
+                ))}
+              </Box>
+              <Typography variant="body1" sx={{ color: "#555", mt: 1 }}>
+                {testimonial.comment}
+              </Typography>
+            </Box>
+          ))}
+        </Slider>
+      </Box>
+    </Box>
   );
 };
 

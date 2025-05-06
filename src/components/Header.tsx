@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useUser } from "../context/UserContext";
 import AuthModal from "./AuthModal";
+import CartModal from "./CartModal";
 
 import { Avatar, Menu, MenuItem, Button, Snackbar, Alert } from "@mui/material";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart"; // Ícone do carrinho
@@ -12,9 +13,20 @@ const Header = () => {
   const { user, logout } = useUser();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCartModalOpen, setIsCartModalOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [notification, setNotification] = useState<string | null>(null); // Notificação para o alerta
+  const [notification, setNotification] = useState<string | null>(null); // Notificação para ações protegidas
+  const [cartNotification, setCartNotification] = useState<string | null>(null); // Notificação para o carrinho
   const navigate = useNavigate();
+
+  // Verifica se o usuário está logado antes de prosseguir para o checkout
+  const handleProceedToCheckout = () => {
+    if (!user) {
+      setIsModalOpen(true); // Abre o modal de login se o usuário não estiver logado
+    } else {
+      navigate("/checkout"); // Redireciona para a página de checkout
+    }
+  };
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -109,7 +121,10 @@ const Header = () => {
         {/* Ações (Carrinho e Login/Cadastro ou Info do usuário) */}
         <div className="flex items-center space-x-6">
           {/* Botão de Carrinho */}
-          <button className="relative flex items-center justify-center transition-transform transform hover:scale-110">
+          <button
+            onClick={() => setIsCartModalOpen(true)}
+            className="relative flex items-center justify-center transition-transform transform hover:scale-110"
+          >
             <span className="absolute -top-3 -right-3 bg-red-600 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center">
               {itemCount}
             </span>
@@ -133,7 +148,7 @@ const Header = () => {
                 onClose={handleCloseMenu}
               >
                 <MenuItem onClick={() => navigate("/profile")}>Minha Conta</MenuItem>
-                <MenuItem onClick={() => navigate("/orders")}>Meus Pedidos</MenuItem> {/* Novo item */}
+                <MenuItem onClick={() => navigate("/orders")}>Meus Pedidos</MenuItem>
                 <MenuItem onClick={handleLogout}>Sair</MenuItem>
               </Menu>
             </div>
@@ -175,7 +190,14 @@ const Header = () => {
       {/* Modal de Login / Cadastro */}
       <AuthModal isOpen={isModalOpen} onClose={closeModal} />
 
-      {/* Notificação */}
+      {/* Modal do Carrinho */}
+      <CartModal
+        isOpen={isCartModalOpen}
+        onClose={() => setIsCartModalOpen(false)}
+        onProceedToCheckout={handleProceedToCheckout}
+      />
+
+      {/* Notificação de ações protegidas */}
       <Snackbar
         open={!!notification}
         autoHideDuration={3000}
@@ -184,6 +206,18 @@ const Header = () => {
       >
         <Alert onClose={() => setNotification(null)} severity="warning" sx={{ width: "100%" }}>
           {notification}
+        </Alert>
+      </Snackbar>
+
+      {/* Notificação de itens adicionados ao carrinho */}
+      <Snackbar
+        open={!!cartNotification}
+        autoHideDuration={3000}
+        onClose={() => setCartNotification(null)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+      >
+        <Alert onClose={() => setCartNotification(null)} severity="success" sx={{ width: "100%" }}>
+          {cartNotification}
         </Alert>
       </Snackbar>
     </header>
