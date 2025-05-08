@@ -21,7 +21,7 @@ const MapLocation = () => {
   const center = { lat: route[0].latitude, lng: route[0].longitude };
 
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey: process.env.REACT_APP_GOOGLE_CLOUD_API_KEY || "",
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_CLOUD_API_KEY || "", // Para Vite
   });
 
   useEffect(() => {
