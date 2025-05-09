@@ -11,9 +11,17 @@ import {
   InputAdornment,
   CircularProgress,
 } from "@mui/material";
-import { useUser } from "../context/UserContext";
+import { useUser } from "../../context/UserContext";
+import useUserService from "./hooks/userService";
+import { ClienteDto } from "../../data/models/models";
 
-const AuthModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+const AuthModal = ({
+  isOpen,
+  onClose,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+}) => {
   const { login } = useUser(); // Hook para atualizar o estado do usuário
   const [isSignup, setIsSignup] = useState(false); // Controla se é login ou cadastro
   const [cpf, setCpf] = useState(""); // CPF para login
@@ -23,21 +31,40 @@ const AuthModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
   const [password, setPassword] = useState(""); // Senha para login e cadastro
   const [loading, setLoading] = useState(false); // Estado de carregamento
 
+  const { createCliente, clienteLogin } = useUserService(); // Funções para criar cliente e fazer login
+
   const toggleForm = () => setIsSignup(!isSignup); // Alterna entre login e cadastro
 
   const handleSubmit = async () => {
     setLoading(true);
 
     if (isSignup) {
-      // Simulação de cadastro
-      console.log("Cadastro:", { name, cpf, cellphone, address, password });
-      // Aqui você pode integrar com o backend para cadastrar o usuário
-      login({ id: "1", name, email: `${cpf}@email.com`, avatar: "/assets/images/avatar.png" });
+      try {
+        const cliente: ClienteDto = {
+          Nome: name,
+          Cpf: cpf,
+          Telefone: cellphone,
+          Endereco: address,
+          Senha: password,
+        };
+        await createCliente(cliente);
+      } catch (error) {
+        console.error("Erro ao criar cliente:", error);
+      } finally {
+        const cliente = await clienteLogin(cpf, password);
+        login(cliente); 
+      }
     } else {
-      // Simulação de login
-      console.log("Login:", { cpf, password });
-      // Aqui você pode integrar com o backend para autenticar o usuário
-      login({ id: "1", name: "Usuário Teste", email: `${cpf}@email.com`, avatar: "/assets/images/avatar.png" });
+      try{
+        const cliente = await clienteLogin(cpf, password)
+        if (cliente) {
+          login(cliente); // Atualiza o estado do usuário no contexto
+        } else {
+          console.error("Erro ao fazer login: Usuário não encontrado");
+        }
+      }catch (error) {
+        console.error("Erro ao fazer login:", error);
+      }
     }
 
     setLoading(false);
@@ -45,9 +72,18 @@ const AuthModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
   };
 
   return (
-    <Dialog open={isOpen} onClose={onClose} aria-labelledby="auth-modal-title" aria-describedby="auth-modal-description">
+    <Dialog
+      open={isOpen}
+      onClose={onClose}
+      aria-labelledby="auth-modal-title"
+      aria-describedby="auth-modal-description"
+    >
       <Box sx={{ width: 400, padding: 2 }}>
-        <DialogTitle id="auth-modal-title" align="center" sx={{ fontWeight: "bold", fontSize: "1.5rem" }}>
+        <DialogTitle
+          id="auth-modal-title"
+          align="center"
+          sx={{ fontWeight: "bold", fontSize: "1.5rem" }}
+        >
           {isSignup ? "Criar Conta" : "Entrar"}
         </DialogTitle>
         <DialogContent>
@@ -105,7 +141,9 @@ const AuthModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             InputProps={{
-              startAdornment: <InputAdornment position="start">🔒</InputAdornment>,
+              startAdornment: (
+                <InputAdornment position="start">🔒</InputAdornment>
+              ),
             }}
           />
 
@@ -149,7 +187,13 @@ const AuthModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
             }}
             disabled={loading}
           >
-            {loading ? <CircularProgress size={24} sx={{ color: "white" }} /> : isSignup ? "Cadastrar" : "Entrar"}
+            {loading ? (
+              <CircularProgress size={24} sx={{ color: "white" }} />
+            ) : isSignup ? (
+              "Cadastrar"
+            ) : (
+              "Entrar"
+            )}
           </Button>
         </DialogActions>
       </Box>
