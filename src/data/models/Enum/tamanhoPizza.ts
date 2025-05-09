@@ -1,5 +1,6 @@
 export enum TamanhoPizza {
-    pequena,
-    média,
-    grande
+    Pequena,
+    Média,
+    Grande,
+    Gigante
 }

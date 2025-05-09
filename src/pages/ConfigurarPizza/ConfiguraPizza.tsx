@@ -19,9 +19,9 @@ import {
 } from "@mui/material";
 import { ShoppingCart, Pizza, CupSoda } from "lucide-react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import usePedidoService from "./hooks/pedidoService"
+import usePedidoService from "./hooks/pedidoService";
 import PersonIcon from '@mui/icons-material/Person';
-
+import { TipoProduto } from "../../data/models/Enum/tipoProduto";
 
 const PizzaOrderForm: React.FC = () => {
   const [produtos, setProdutos] = useState<Produto[]>([]);
@@ -30,9 +30,8 @@ const PizzaOrderForm: React.FC = () => {
   const [pedido, setPedido] = useState<PedidoDto>();
   const [itemPedido, setItemPedido] = useState<ItemPedidoDto[]>([]);
   const [pizzaSizes, setPizzaSizes] = useState<TamanhoPizza[]>([]);
-  const [drinkSizes, setDrinkSizes] = useState<TamanhoBebida[]>([]);
 
-  const [selectedPizzaId, setSelectedPizzaId] = useState<string>("");
+  const [selectedPizzaName, setSelectedPizzaName] = useState<string>("");
   const [pizzaQuantity, setPizzaQuantity] = useState<number>(1);
   const [selectedPizzaSize, setSelectedPizzaSize] = useState<TamanhoPizza>(2);
 
@@ -45,45 +44,59 @@ const PizzaOrderForm: React.FC = () => {
   const [clienteNome, setClienteNome] = useState("");
   const [clienteEndereco, setClienteEndereco] = useState("");
   const [clienteTelefone, setClienteTelefone] = useState("");
+  const [clienteSenha, setClienteSenha] = useState("senha123");
+
+  // Tipo de pagamento
   const [tipoPagamento, setTipoPagamento] = useState<TipoPagamento>(
     TipoPagamento.Pix
   );
-
+  const [uniquePizzaNames, setUniquePizzaNames] = useState<string[]>([]);
   const { getProdutos, submitPedido } = usePedidoService();
 
   const loadProdutos = useCallback(async () => {
     const produtos = await getProdutos();
-    if (produtos) {
-      setProdutos(produtos);
-      setPizzas(produtos.filter((p: Produto) => p.tipo === 0));
-      setBebidas(produtos.filter((p: Produto) => p.tipo === 1));
-      setPizzaSizes(
-        Array.from(
-          new Set(
-            produtos
-              .filter((p: Produto) => p.tipo === 0)
-              .map((p: Produto) => p.tamanhoPizza!)
-          )
+    if (!produtos) return;
+
+    setProdutos(produtos);
+
+    // Filtrar por tipo
+    const pizzas = produtos.filter((p: Produto) => p.tipo === TipoProduto.Pizza);
+    const bebidas = produtos.filter((p: Produto) => p.tipo === TipoProduto.Bebida);
+
+    setPizzas(pizzas);
+    setBebidas(bebidas);
+
+    // Agrupar nomes únicos
+    const uniquePizzaNames: string[] = Array.from(new Set(pizzas.map((p: Produto) => p.nome)));
+
+    setUniquePizzaNames(uniquePizzaNames); // Exibição
+
+    setPizzaSizes(
+      Array.from(
+        new Set(
+          produtos
+            .filter((p: Produto) => p.tipo === 0)
+            .map((p: Produto) => p.tamanhoPizza!)
         )
-      );
-      setDrinkSizes(
-        Array.from(
-          new Set(
-            produtos
-              .filter((p: Produto) => p.tipo === 1)
-              .map((p: Produto) => p.tamanhoBebida!)
-          )
-        )
-      );
-    }
+      )
+    );
   }, [getProdutos]);
+
+  // Função para buscar o produto selecionado pelo nome e tamanho
+  function getProdutoSelecionado(nome: string, tamanho: string | number, tipo: TipoProduto): Produto | undefined {
+    const lista = tipo === TipoProduto.Pizza ? pizzas : bebidas;
+    return lista.find(p =>
+      p.nome === nome &&
+      (tipo === TipoProduto.Pizza ? p.tamanhoPizza === tamanho : p.tamanhoBebida === tamanho)
+    );
+  }
 
   useEffect(() => {
     loadProdutos();
   }, [loadProdutos]);
 
-  const selectedPizza = pizzas.find((p : Produto) => p.id === selectedPizzaId);
-  const selectedDrink = bebidas.find((d : Produto) => d.id === selectedDrinkId);
+  const selectedPizza = getProdutoSelecionado(selectedPizzaName, selectedPizzaSize, TipoProduto.Pizza);
+  const selectedDrink = bebidas.find((d: Produto) => d.id === selectedDrinkId);
 
   const pizzaTotal = selectedPizza ? selectedPizza.preco * pizzaQuantity : 0;
   const drinkTotal = selectedDrink ? selectedDrink.preco * drinkQuantity : 0;
@@ -115,6 +128,7 @@ const PizzaOrderForm: React.FC = () => {
         Nome: clienteNome,
         Endereco: clienteEndereco,
         Telefone: clienteTelefone,
+        Senha: clienteSenha,
       },
       ItemPedido: itens,
       TipoPagamento: tipoPagamento,
@@ -148,7 +162,7 @@ const PizzaOrderForm: React.FC = () => {
           {/* Accordion: Escolha da Pizza */}
           <Accordion style={{ borderRadius: 10, margin: "16px" }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="h6"><Pizza/>Escolha sua Pizza</Typography>
+              <Typography variant="h6"><Pizza />Escolha sua Pizza</Typography>
             </AccordionSummary>
             <AccordionDetails>
               <div className="space-y-4">
@@ -157,13 +171,13 @@ const PizzaOrderForm: React.FC = () => {
                   select
                   fullWidth
                   label="Pizza"
-                  value={selectedPizzaId}
-                  onChange={(e) => setSelectedPizzaId(e.target.value)}
+                  value={selectedPizzaName}
+                  onChange={(e) => setSelectedPizzaName(e.target.value)}
                   style={{ marginBottom: "16px" }}
                 >
-                  {pizzas.map((pizza) => (
-                    <MenuItem key={pizza.id} value={pizza.id}>
-                      {pizza.nome}
+                  {uniquePizzaNames.map((pizza) => (
+                    <MenuItem key={pizza} value={pizza}>
+                      {pizza}
                     </MenuItem>
                   ))}
                 </TextField>
@@ -201,7 +215,7 @@ const PizzaOrderForm: React.FC = () => {
           {/* Accordion: Escolha da Bebida */}
           <Accordion style={{ borderRadius: 10, margin: "16px" }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="h6"><CupSoda/>Escolha sua Bebida</Typography>
+              <Typography variant="h6"><CupSoda />Escolha sua Bebida</Typography>
             </AccordionSummary>
             <AccordionDetails>
               <div className="space-y-4">
@@ -231,22 +245,6 @@ const PizzaOrderForm: React.FC = () => {
                   }
                   style={{ marginBottom: "16px" }}
                 />
-
-                <Typography variant="subtitle1">Tamanho:</Typography>
-                <div className="flex gap-4 flex-wrap">
-                  {drinkSizes.map((size) => (
-                    <label key={size}>
-                      <input
-                        type="radio"
-                        name="drinkSize"
-                        value={size}
-                        checked={selectedDrinkSize === size}
-                        onChange={() => setSelectedDrinkSize(size)}
-                      />{" "}
-                      {size} ml
-                    </label>
-                  ))}
-                </div>
               </div>
             </AccordionDetails>
           </Accordion>
@@ -254,7 +252,7 @@ const PizzaOrderForm: React.FC = () => {
           {/* Accordion: Dados do Cliente */}
           <Accordion style={{ borderRadius: 10, margin: "16px" }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="h6"><PersonIcon/> Dados do Cliente</Typography>
+              <Typography variant="h6"><PersonIcon /> Dados do Cliente</Typography>
             </AccordionSummary>
             <AccordionDetails>
               <div className="space-y-4">
@@ -297,29 +295,30 @@ const PizzaOrderForm: React.FC = () => {
             label="Tipo de Pagamento"
             value={tipoPagamento}
             onChange={(e) => setTipoPagamento(e.target.value as TipoPagamento)}
-            style={{ marginTop: "16px", borderRadius: 10 }} 
+            style={{ marginTop: "16px", borderRadius: 10 }}
           >
-            {Object.values(TipoPagamento).map((tp) => (
-              <MenuItem key={tp} value={tp}>
-                {tp}
+            {Object.values(TipoPagamento).map((paymentOption) => (
+              <MenuItem key={paymentOption} value={paymentOption}>
+                {paymentOption}
               </MenuItem>
             ))}
           </TextField>
 
-          {/* Total + Botão */}
-          <div className="flex flex-col sm:flex-row justify-between items-center pt-4 gap-4">
-            <Typography variant="h6">
-              Total:{" "}
-              <span style={{ color: "#16a34a" }}>${total.toFixed(2)}</span>
-            </Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleAdicionarAoPedido}
-            >
-              Adicionar ao Pedido
-            </Button>
-          </div>
+          {/* Total do Pedido */}
+          <Typography variant="h6" style={{ marginTop: "16px" }}>
+            Total do Pedido: <span style={{ color: "#16a34a" }}>R$ {total.toFixed(2)}</span>
+          </Typography>
+
+          {/* Botão de Enviar Pedido */}
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleAdicionarAoPedido}
+            fullWidth
+            style={{ marginTop: "16px", padding: "16px" }}
+          >
+            Finalizar Pedido
+          </Button>
         </CardContent>
       </Card>
     </div>

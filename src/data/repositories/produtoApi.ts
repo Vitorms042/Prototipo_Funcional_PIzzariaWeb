@@ -18,8 +18,10 @@ class ProdutoApi {
             throw new Error("Erro ao buscar produtos");
         }
 
-        return await response.json(); // <<< Retorna a resposta do servidor
+        const data = await response.json();
+        return { data };
     }
+
 
 }
 

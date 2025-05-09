@@ -8,6 +8,7 @@ interface ClienteDto {
     Nome: string;
     Endereco: string;
     Telefone: string;
+    Senha: string;
 }
 
 interface PedidoDto {

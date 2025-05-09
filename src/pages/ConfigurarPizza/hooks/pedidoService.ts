@@ -11,8 +11,8 @@ const usePedidoService = () => {
 
     const getProdutos = useCallback(async () => {
         try {
-            const { response } = await ProdutoService.getProdutos();
-            return response.data;
+            const { data } = await ProdutoService.getProdutos();
+            return data;
         } catch (error) {
             console.error("Erro ao buscar produtos:", error);
             throw error;
@@ -21,7 +21,7 @@ const usePedidoService = () => {
         [ProdutoService]
     );
 
-    const submitPedido = useCallback(async (pedido : PedidoDto) => {
+    const submitPedido = useCallback(async (pedido: PedidoDto) => {
         try {
             const { response } = await PedidoService.submitPedido(pedido);
             return response.data;
