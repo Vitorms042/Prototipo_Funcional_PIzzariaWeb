@@ -17,8 +17,7 @@ export enum TamanhoBebida {
   export enum TipoPagamento {
     Pix = "pix",
     Dinheiro = "dinheiro",
-    Credito = "credito",
-    Debito = "debito",
+    Cartao = "cartao"
   }
   
   // Interface para o cliente

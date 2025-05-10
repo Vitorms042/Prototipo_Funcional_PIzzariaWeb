@@ -23,8 +23,8 @@ const usePedidoService = () => {
 
     const submitPedido = useCallback(async (pedido: PedidoDto) => {
         try {
-            const { response } = await PedidoService.submitPedido(pedido);
-            return response.data;
+            const  response  = await PedidoService.submitPedido(pedido);
+            return response;
         } catch (error) {
             console.error("Erro ao criar pedido:", error);
             throw error;

@@ -22,15 +22,7 @@ const HeroSection = () => {
               to="/configuracaopizza"
               className="px-8 py-3 bg-yellow-500 hover:bg-yellow-400 text-white font-semibold rounded-lg transition-colors"
             >
-              Comece sua Pizza
-            </Link>
-
-            {/* Botão de Bebidas */}
-            <Link
-              to="/drinkssetup"
-              className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-colors"
-            >
-              Conferir Bebidas
+              Comece seu Pedido
             </Link>
           </div>
         </div>

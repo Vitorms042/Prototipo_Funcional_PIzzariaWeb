@@ -22,14 +22,17 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import usePedidoService from "./hooks/pedidoService";
 import PersonIcon from '@mui/icons-material/Person';
 import { TipoProduto } from "../../data/models/Enum/tipoProduto";
+import { useNavigate } from "react-router-dom";
 
 const PizzaOrderForm: React.FC = () => {
+  const navigate = useNavigate();
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [pizzas, setPizzas] = useState<Produto[]>([]);
   const [bebidas, setBebidas] = useState<Produto[]>([]);
   const [pedido, setPedido] = useState<PedidoDto>();
   const [itemPedido, setItemPedido] = useState<ItemPedidoDto[]>([]);
   const [pizzaSizes, setPizzaSizes] = useState<TamanhoPizza[]>([]);
+  const [pedidoId, setPedidoId] = useState<string>("");
 
   const [selectedPizzaName, setSelectedPizzaName] = useState<string>("");
   const [pizzaQuantity, setPizzaQuantity] = useState<number>(1);
@@ -138,8 +141,10 @@ const PizzaOrderForm: React.FC = () => {
     setItemPedido(itens);
 
     try {
-      await submitPedido(novoPedido);
+      const pedidoId = await submitPedido(novoPedido);
+      setPedidoId(pedidoId);
       alert("Pedido enviado com sucesso!");
+      navigate(`/trackorder/${pedidoId}`);
     } catch (error) {
       console.error("Erro ao enviar pedido:", error);
       alert("Erro ao enviar pedido.");
