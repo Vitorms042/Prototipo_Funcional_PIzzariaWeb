@@ -19,6 +19,7 @@
     "@react-google-maps/api": "^2.20.6",
     "@tailwindcss/vite": "^4.1.5",
     "leaflet": "^1.9.4",
+    "lucide-react": "^0.508.0",
     "pizzaria-web": "file:",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

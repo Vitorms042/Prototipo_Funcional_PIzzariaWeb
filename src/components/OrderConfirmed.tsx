@@ -19,7 +19,7 @@ const pedidosMock: PedidoDto[] = [
       { quantidade: 2, valor_item: 8.0, produtoId: "2" },
       { quantidade: 1, valor_item: 12.0, produtoId: "3" },
     ],
-    tipo_pagamento: TipoPagamento.Credito,
+    tipo_pagamento: TipoPagamento.Cartao,
   },
 ];
 

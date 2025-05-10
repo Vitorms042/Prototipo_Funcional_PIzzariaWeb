@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 
 import Home from "../pages/Home";
-import ConfiguracaoPizza from "../pages/ConfiguraPizza";
+import ConfiguracaoPizza from "../pages/ConfigurarPizza/ConfiguraPizza";
 import DrinksSetup from "../pages/DrinkSetup";
 import TrackOrder from "../pages/TrackOrder";
 import MapLocation from "../pages/MapaLocalizacao";

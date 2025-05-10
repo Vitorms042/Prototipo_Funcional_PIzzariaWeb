@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useUser } from "../context/UserContext";
-import AuthModal from "./AuthModal";
+import AuthModal from "./AuthModal/AuthModal";
 import CartModal from "./CartModal";
+import PersonIcon from '@mui/icons-material/Person';
 
 import { Avatar, Menu, MenuItem, Button, Snackbar, Alert } from "@mui/material";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart"; // Ícone do carrinho
@@ -134,13 +135,17 @@ const Header = () => {
           {/* Login / Cadastro ou Informações do usuário */}
           {user ? (
             <div>
-              <Button
+              {/* <Button
                 onClick={handleUserMenu}
-                startIcon={<Avatar src={user.avatar} />}
+                startIcon= PersonIcon
                 className="text-gray-600 hover:text-gray-900"
               >
-                {user.email}
-              </Button>
+                {user.name}
+              </Button> */}
+
+              <a onClick={handleUserMenu} className="text-gray-600 hover:text-gray-900">
+                <PersonIcon/> <span className="sr-only">{user.name}</span>
+              </a>
 
               <Menu
                 anchorEl={anchorEl}
