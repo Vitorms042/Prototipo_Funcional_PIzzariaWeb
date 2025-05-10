@@ -2,10 +2,10 @@ import React, { createContext, useState, useContext, PropsWithChildren } from "r
 
 // Tipagem para as informações do usuário
 interface User {
-  id: string;
   name: string;
-  email: string;
-  avatar: string; // URL da imagem do avatar
+  telefone: string;
+  endereco: string;
+  cpf: string;
 }
 
 interface UserContextType {

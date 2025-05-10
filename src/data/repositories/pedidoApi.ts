@@ -2,7 +2,7 @@ import { PedidoDto } from "../models/models";
 import apiConfig from "../../config/apiconfig";
 
 class PedidoApi {
-  private baseUrl: string;
+  private readonly baseUrl: string;
   constructor() {
     this.baseUrl = apiConfig.baseUrl;
   }

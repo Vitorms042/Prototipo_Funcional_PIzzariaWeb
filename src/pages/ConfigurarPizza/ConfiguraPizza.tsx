@@ -40,8 +40,6 @@ const PizzaOrderForm: React.FC = () => {
 
   const [selectedDrinkId, setSelectedDrinkId] = useState<string>("");
   const [drinkQuantity, setDrinkQuantity] = useState<number>(1);
-  const [selectedDrinkSize, setSelectedDrinkSize] =
-    useState<TamanhoBebida>(1000);
 
   const [clienteCpf, setClienteCpf] = useState("");
   const [clienteNome, setClienteNome] = useState("");
